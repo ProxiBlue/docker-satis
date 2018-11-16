@@ -30,11 +30,13 @@ fi
 
 chown www-data:www-data /root/satis.json
 ln -s /root/satis.json ./satisfy
+chown www-data:www-data /root/.composer -R
+chmod 777 /root/.composer -R
 
 echo ""
 cat /app/satis.json
 echo ""
-echo "" 
+echo ""
 
 if [ ! -z "$PRIVATE_REPO_DOMAIN" ]; then
   echo ""
