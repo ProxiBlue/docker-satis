@@ -29,11 +29,12 @@ EOL
 fi
 
 chown www-data:www-data /root/satis.json
+ln -s /root/satis.json ./satisfy
 
 echo ""
 cat /app/satis.json
 echo ""
-echo ""
+echo "" 
 
 if [ ! -z "$PRIVATE_REPO_DOMAIN" ]; then
   echo ""
