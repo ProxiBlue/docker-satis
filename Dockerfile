@@ -63,11 +63,8 @@ RUN git clone https://github.com/ProxiBlue/satisfy.git /satisfy && cd /satisfy &
 ADD scripts /app/scripts
 
 ADD scripts/crontab /etc/cron.d/satis-cron
-ADD config.json /root/config.json
-RUN ln -s /root/config.json /app/config.json
+ADD satis.json /root/satis.json
 ADD server.js /app/server.js
-ADD config.php /root/config.php
-RUN ln -s /root/config.php /satisfy/app/config.php
 RUN chmod 0644 /etc/cron.d/satis-cron \
 	&& touch /var/log/satis-cron.log \
 	&& chmod 777 /root/config.json \
@@ -83,8 +80,6 @@ ADD supervisor/4-node.conf /etc/supervisor/conf.d/4-node.conf
 RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/etc/php/7.2/fpm/pool.d/www.conf"
 
 RUN mkdir /satisfy/app/../var/cache/dev -p && chmod 777 /satisfy/app/../var -R
-#RUN mkdir /satisfy/app/../var/logs && chmod 777 /satisfy/app/../var/logs
-
 
 WORKDIR /app
 
