@@ -12,6 +12,22 @@ DEFAULT_CRONTAB_FREQUENCY_ESCAPED=$(printf '%s\n' "${DEFAULT_CRONTAB_FREQUENCY}"
 [ -z "$CRONTAB_FREQUENCY" ] && CRONTAB_FREQUENCY="$DEFAULT_CRONTAB_FREQUENCY"
 CRONTAB_FREQUENCY_ESCAPED=$(printf '%s\n' "${CRONTAB_FREQUENCY}" | sed 's/[[\.*^$/]/\\&/g')
 
+
+if [ ! -f /root/config.json ]; then
+    cat >/root/config.json <<EOL
+{
+    "name": "ENJO Composer Packages Cache",
+    "homepage": "https://satis.enjo.com.au",
+    "repositories": [
+    ],
+    "require-all":true,
+    "require-dependencies":true,
+    "require-dev-dependencies":true,
+    "minimum-stability":"stable"
+}
+EOL
+fi
+
 echo ""
 cat /app/config.json
 echo ""
