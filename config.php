@@ -3,7 +3,7 @@
 /**
  * Satis configuration file
  */
-$app['satis.filename'] = '/app/config.json';
+$app['satis.filename'] = '/root/config.json';
 
 /**
  * Satis auditlog (cheap backup/versioning) path
@@ -31,7 +31,7 @@ $app['repository.pattern'] = '.*';
  */
 $app['auth'] = $app->share(function() {
     return function($username) {
-        return (bool) preg_match('/@your-organization\.tld$/', $username);
+        return (bool) preg_match('/@enjo\.com\.au$/', $username);
     };
 });
 
@@ -42,7 +42,6 @@ $app['auth.use_login_form'] = true;
 
 /**
  * Users authorized to access admin section (an array of username => password)
- * Default credentials are: admin / foo.
  *
  * You can generate a new password with the following command:
  *
@@ -50,8 +49,7 @@ $app['auth.use_login_form'] = true;
  *
  */
 $app['auth.users'] = array(
-    'admin' => '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33',
-    'john' => 'd6b4e84ee7f31d88617a6b60421451272ebf1a3a',
+    'admin' => '202ef879240a695007cde86031b6843735039841',
 );
 
 /**

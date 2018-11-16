@@ -1,10 +1,16 @@
-FROM ubuntu:15.10
+FROM ubuntu:18.04
 
-MAINTAINER Yannick Pereira-Reis <yannick.pereira.reis@gmail.com>
+LABEL maintainer="Lucas van Staden lucas.vanstaden@enjo.com.au"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
+RUN apt-get update
+RUN apt-get -y install software-properties-common tzdata
+
+RUN add-apt-repository ppa:ondrej/php
+RUN apt-get update && apt -y upgrade
+
+RUN apt-get install -y --no-install-recommends \
 	build-essential \
 	software-properties-common \
 	cron \
@@ -12,27 +18,33 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
 	git \
 	curl \
 	supervisor \
-	php5 \
-	php5-mcrypt \
-	php5-tidy \
-	php5-cli \
-	php5-common \
-	php5-curl \
-	php5-intl \
-	php5-fpm \
-	php-apc \
+    php7.1-cli \
+    php7.1-mysql \
+    php7.1-curl \
+    php7.1-mcrypt \
+    php7.1-gd \
+    php7.1-redis \
+    php7.1-xml \
+    php7.1-soap \
+    php7.1-mbstring \
+    php7.1-zip \
+    php7.2-fpm \
+    php7.2-cli \
+    php7.2-mysql \
+    php7.2-curl \
+    php7.2-gd \
+    php7.2-redis \
+    php7.2-xml \
+    php7.2-soap \
+    php7.2-mbstring \
+    php7.2-zip \
 	nginx \
 	ssh \
 	npm \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php5/fpm/php.ini \
-	&& sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php5/cli/php.ini \
-	&& echo "daemon off;" >> /etc/nginx/nginx.conf \
-	&& sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php5/fpm/php-fpm.conf \
-	&& sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php5/fpm/php.ini
-
 ADD nginx/default   /etc/nginx/sites-available/default
+ADD nginx/.htpasswd   /etc/nginx/
 
 # Install nodejs
 RUN npm install express serve-static
@@ -44,21 +56,21 @@ RUN mkdir -p /root/.ssh/ && touch /root/.ssh/known_hosts
 # Install prestissimo
 # Install Satis and Satisfy
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-	&& /usr/local/bin/composer global require hirak/prestissimo \
-	&& /usr/local/bin/composer create-project playbloom/satisfy:dev-master --stability=dev \
-	&& chmod -R 777 /satisfy \
-	&& rm -rf /root/.composer/cache/*
+	&& /usr/local/bin/composer global require hirak/prestissimo
+RUN mkdir /satisfy && chmod -R 777 /satisfy && rm -rf /root/.composer/cache/*
+RUN git clone https://github.com/ProxiBlue/satisfy.git /satisfy && cd /satisfy && composer install
 
 ADD scripts /app/scripts
 
 ADD scripts/crontab /etc/cron.d/satis-cron
-ADD config.json /app/config.json
+ADD config.json /root/config.json
+RUN ln -s /root/config.json /app/config.json
 ADD server.js /app/server.js
-ADD config.php /satisfy/app/config.php
-
+ADD config.php /root/config.php
+RUN ln -s /root/config.php /satisfy/app/config.php
 RUN chmod 0644 /etc/cron.d/satis-cron \
 	&& touch /var/log/satis-cron.log \
-	&& chmod 777 /app/config.json \
+	&& chmod 777 /root/config.json \
 	&& chmod 777 /app/server.js \
 	&& chmod +x /app/scripts/startup.sh
 
@@ -67,6 +79,12 @@ ADD supervisor/1-cron.conf /etc/supervisor/conf.d/1-cron.conf
 ADD supervisor/2-nginx.conf /etc/supervisor/conf.d/2-nginx.conf
 ADD supervisor/3-php.conf /etc/supervisor/conf.d/3-php.conf
 ADD supervisor/4-node.conf /etc/supervisor/conf.d/4-node.conf
+
+RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/etc/php/7.2/fpm/pool.d/www.conf"
+
+RUN mkdir /satisfy/app/../var/cache/dev -p && chmod 777 /satisfy/app/../var -R
+#RUN mkdir /satisfy/app/../var/logs && chmod 777 /satisfy/app/../var/logs
+
 
 WORKDIR /app
 
