@@ -13,8 +13,8 @@ DEFAULT_CRONTAB_FREQUENCY_ESCAPED=$(printf '%s\n' "${DEFAULT_CRONTAB_FREQUENCY}"
 CRONTAB_FREQUENCY_ESCAPED=$(printf '%s\n' "${CRONTAB_FREQUENCY}" | sed 's/[[\.*^$/]/\\&/g')
 
 
-if [ ! -f /root/config.json ]; then
-    cat >/root/config.json <<EOL
+if [ ! -f /root/satis.json ]; then
+    cat >/root/satis.json <<EOL
 {
     "name": "ENJO Composer Packages Cache",
     "homepage": "https://satis.enjo.com.au",
@@ -28,8 +28,10 @@ if [ ! -f /root/config.json ]; then
 EOL
 fi
 
+chown www-data:www-data /root/satis.json
+
 echo ""
-cat /app/config.json
+cat /app/satis.json
 echo ""
 echo ""
 
@@ -49,11 +51,6 @@ fi
 
 touch /root/.ssh/known_hosts
 
-if [ -f /var/tmp/sshconf ]; then
-    echo " >> Copying host ssh config from /var/tmp/sshconf to /root/.ssh/config"
-    cp /var/tmp/sshconf /root/.ssh/config
-fi
-
 echo " >> Creating the correct known_hosts file"
 for _DOMAIN in $PRIVATE_REPO_DOMAIN_LIST ; do
     IFS=':' read -a arr <<< "${_DOMAIN}"
@@ -65,13 +62,10 @@ for _DOMAIN in $PRIVATE_REPO_DOMAIN_LIST ; do
     fi
 done
 
-echo " >> Copying host ssh key from /var/tmp/id to /root/.ssh/id_rsa"
-cp /var/tmp/id /root/.ssh/id_rsa
-chmod 600 /root/.ssh/id_rsa
-
 chmod 600 /root/.ssh/id_rsa
 
 echo " >> Building Satis for the first time"
+
 scripts/build.sh
 
 if [[ $CRONTAB_FREQUENCY == -1 ]]; then
@@ -80,9 +74,6 @@ else
   echo " > Crontab frequency set to: ${CRONTAB_FREQUENCY}"
   sed -i "s/${DEFAULT_CRONTAB_FREQUENCY_ESCAPED}/${CRONTAB_FREQUENCY_ESCAPED}/g" /etc/cron.d/satis-cron
 fi
-
-# Copy custom config if exists
-[[ -f /app/config.php ]] && cp /app/config.php  /satisfy/app/config.php
 
 
 exit 0
