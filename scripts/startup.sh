@@ -30,8 +30,36 @@ fi
 
 chown www-data:www-data /root/satis.json
 ln -s /root/satis.json ./satisfy
+
+
+if [ ! -f /root/packages.json ]; then
+    touch /root/packages.json
+    cat >/root/packages.json <<EOL
+{
+
+}
+EOL
+fi
+
+chown www-data:www-data /root/packages.json
+ln -s /root/packages.json ./satisfy/web/
+chmod 777 /root/packaes.json
+
+if [ ! -f /root/index.html ]; then
+    touch /root/index.html
+EOL
+fi
+
+chown www-data:www-data /root/index.html
+ln -s /root/index.html ./satisfy/web/
+chmod 777 /root/index.html
+
+
 chown www-data:www-data /root/.composer -R
 chmod 777 /root/.composer -R
+mkdir /satisfy/web/include
+chown www-data:www-data /satisfy/web/include
+chown www-data:www-data /satisfy/packages.json
 
 echo ""
 cat /app/satis.json
