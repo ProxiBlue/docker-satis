@@ -9,6 +9,8 @@ server {
     access_log /var/log/nginx/satisfy-access.log;
     error_log  /var/log/nginx/satisfy-error.log error;
 
+    index index.html index.htm index.php;
+
     charset utf-8;
 
     location / {

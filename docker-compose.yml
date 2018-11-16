@@ -9,7 +9,6 @@ services:
     environment:
       PRIVATE_REPO_DOMAIN_LIST: bitbucket.org gitlab.com github.com
       CRONTAB_FREQUENCY: "*/10 * * * *"
-      VIRTUAL_HOST: satis.enjo.com.au
     ports:
       - 127.0.0.1:3333:3000
       - 127.0.0.1:8585:80
