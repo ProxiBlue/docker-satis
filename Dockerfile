@@ -67,7 +67,6 @@ ADD satis.json /root/satis.json
 ADD server.js /app/server.js
 RUN chmod 0644 /etc/cron.d/satis-cron \
 	&& touch /var/log/satis-cron.log \
-	&& chmod 777 /root/config.json \
 	&& chmod 777 /app/server.js \
 	&& chmod +x /app/scripts/startup.sh
 
